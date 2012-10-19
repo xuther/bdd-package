@@ -88,7 +88,7 @@ public:
   operator|(const BDD& other);
 
   BDD 
-  Restrict(BDD g);
+  Ite(const BDD& g, const BDD& h, unsigned int limit = 0) const;
 };
 
 

@@ -36,10 +36,9 @@ test_BDD(FILE *fp_dot) {
     (a & ~b & ap & ~bp);
 
   BDD l = (~ap & ~bp) | (ap & ~bp);
-  BDD rest = r.Restrict(l);
 
   if (fp_dot) {
-    bddToDot(mgr, rest, 4, fp_dot, gDebug, gVerbose);
+    bddToDot(mgr, r, 4, fp_dot, gDebug, gVerbose);
   }
 }
 
