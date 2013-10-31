@@ -71,7 +71,7 @@ bddObj.o:	bddObj.cpp bddObj.h
 		$(CC) $(CFLAGS) $(CUDDINC) -c $<
 
 bdd-test:	$(OBJS)
-		$(CC) $(CFLAGS) $(OBJS) -o bdd-test $(CUDDLIB) -largtable2 $(CUDDLIBS)
+		$(CC) $(CFLAGS) $(OBJS) -o bdd-test $(CUDDLIB) $(CUDDLIBS)
 
 clean:
 	rm -f *.o *~ bdd-test
