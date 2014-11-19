@@ -1,6 +1,6 @@
 #include <stdlib.h>
 
-#include "argtable2.h"
+//#include "argtable2.h"
 #include "bddObj.h"
 
 /* NOTE: the last 2 paramters are optional

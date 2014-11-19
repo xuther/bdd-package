@@ -63,7 +63,7 @@ class BDD {
 protected:
   
   bddMgr* ptrMgr;
-
+  
 public:
 
   BDD();
@@ -73,7 +73,7 @@ public:
   ~BDD();
 
   int 
-  operator==(const BDD& other);
+  operator==(const BDD& other) const;
 
   BDD& 
   operator=(const BDD& right);
@@ -89,6 +89,10 @@ public:
 
   BDD 
   Ite(const BDD& g, const BDD& h, unsigned int limit = 0) const;
+
+  BDD 
+  Restrict(const BDD& c) const;
+
 };
 
 

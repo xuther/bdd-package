@@ -12,7 +12,7 @@
 #
 # BTW, you can always use make USE_CUDD=1 or make USE_CUDD="" as an alternative.
 
-USE_CUDD	= 1
+# USE_CUDD	= 1
 
 ifdef USE_CUDD
 
@@ -31,7 +31,7 @@ CUDD	= /Users/egm/Documents/cudd-2.5.0
  CUDDLIB	= -L$(CUDD)/lib
 CUDDLIBS	= -lobj -lcudd -lmtr -lutil -lst -lepd
     OBJS	=  bddToDot.o main.o 
- DEFINES	= -D USE_CUDD
+ DEFINES	= -D USE_CUDD -stdlib=libstdc++
 
 # These are definitions to use your own BDD package.  You should not need
 # to change any of these unless I left off an object file.

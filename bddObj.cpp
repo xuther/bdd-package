@@ -21,7 +21,7 @@ BDD::~BDD() {
 }
  
 int 
-BDD::operator==(const BDD& other) {
+BDD::operator==(const BDD& other) const {
   return 0;
 }
 
@@ -46,7 +46,7 @@ BDD::operator|(const BDD& other) {
 }
 
 BDD 
-BDD::Restrict(BDD g) {
+BDD::Restrict(const BDD& c) const{
   return *this;
 }
 
