@@ -42,12 +42,6 @@ test_BDD(FILE *fp_dot) {
   }
 }
 
-/* See:
- *
- * http://students.cs.byu.edu/~cs486ta/handouts/f04/bdd-package.html 
- *
- * For detailed instructions.
- */
 
 int 
 main(int argc, char* argv[]) {

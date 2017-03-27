@@ -22,16 +22,16 @@ ifdef USE_CUDD
 #
 # YOU NEED TO CONFIGURE THIS TO YOUR SYSTEM
 
-CUDD	= /Users/egm/Documents/cudd-2.5.0
+CUDD	= /Users/egm/Documents/cudd-3.0.0
 
 # You should not need to change the rest of these variable definitions
 # to use CUDD
 
  CUDDINC	= -I$(CUDD)/include
  CUDDLIB	= -L$(CUDD)/lib
-CUDDLIBS	= -lobj -lcudd -lmtr -lutil -lst -lepd
+CUDDLIBS	= -lobj -lcudd
     OBJS	=  bddToDot.o main.o 
- DEFINES	= -D USE_CUDD -stdlib=libstdc++
+ DEFINES	= -D USE_CUDD -std=c++11
 
 # These are definitions to use your own BDD package.  You should not need
 # to change any of these unless I left off an object file.
@@ -50,7 +50,7 @@ endif
 # You may need to change these for your particular environment (i.e.,
 # nonUnix based).
 
-CC 		= g++
+CC 		= clang++
 CFLAGS 		= -g -Wall $(DEFINES)
 
 # Simple name a different target to change default 'make' behavior
