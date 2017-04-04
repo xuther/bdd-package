@@ -30,7 +30,7 @@ CUDD	= /Users/egm/Documents/cudd-3.0.0
  CUDDINC	= -I$(CUDD)/include
  CUDDLIB	= -L$(CUDD)/lib
 CUDDLIBS	= -lobj -lcudd
-    OBJS	=  bddToDot.o main.o 
+    OBJS	=  DumpDot.o main.o 
  DEFINES	= -D USE_CUDD -std=c++11
 
 # These are definitions to use your own BDD package.  You should not need
@@ -42,7 +42,7 @@ else
  CUDDLIB	= 
     CUDD	= 
 CUDDLIBS	= 
-    OBJS	= bddToDot.o bddObj.o main.o 
+    OBJS	= DumpDot.o bddObj.o main.o 
  DEFINES	=
 
 endif
@@ -74,4 +74,4 @@ bdd-test:	$(OBJS)
 		$(CC) $(CFLAGS) $(OBJS) -o bdd-test $(CUDDLIB) $(CUDDLIBS)
 
 clean:
-	rm -f *.o *~ bdd-test
+	rm -f *.o *~ bdd-test *.dot *.pdf

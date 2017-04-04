@@ -1,68 +1,62 @@
 #include <stdlib.h>
+#include <unistd.h>
+#include <vector>
+//#include <string>
 
-//#include "argtable2.h"
 #include "bddObj.h"
 
-/* NOTE: the last 2 paramters are optional
+/* NOTE: the last 3 paramters are optional
  */
-
 extern void
-bddToDot(bddMgr& mgr, 
-	 BDD f, 
-	 int num_vars, 
-	 FILE* fp_dot,
-	 int debug = 0, 
-	 int verbose = 0);
+DumpDot(bddMgr& mgr,
+		const std::vector<BDD>& nodes,
+		char const * const * inames = 0, 
+		char const * const * onames = 0, 
+		FILE* fp = stdout);
 
-/* The gVerbose and gDebug globals are used to toggle verbose and debug
- * output.  This standard is followed in all projects for cs486.
- */
-
-int gVerbose = 0, gDebug = 0;
-
-/* This is a simple test function.  Please feel free to change it to
- * meet your needs.
- */
+void makePDF(std::string name) {
+  pid_t pid = fork();
+  if (pid == 0) {
+  	  char arg0[] = "dot";
+  	  char arg1[] = "-Tpdf";
+	  std::string oname = "-o" + name + ".pdf";
+	  std::string iname = name + ".dot";
+  	  char* argv[] = {arg0, arg1, (char *)oname.c_str(), (char *)iname.c_str(), 0};
+  	  execve("/usr/local/bin/dot", argv, NULL);
+  } else {
+  	  int stat;
+  	  waitpid(pid, &stat, 0);
+  }
+}
 
 void 
-test_BDD(FILE *fp_dot) {
-  bddMgr mgr (0, 0);
-  BDD a = mgr.bddVar();
-  BDD b = mgr.bddVar();
-  BDD ap = mgr.bddVar();
-  BDD bp = mgr.bddVar();
-
-  BDD r = (~a & ~b & ap & bp) | (a & b & ~ap & ~bp) | (a & b & ap & ~bp) |
-    (a & ~b & ap & ~bp);
-
-  BDD l = (~ap & ~bp) | (ap & ~bp);
-
-  if (fp_dot) {
-    bddToDot(mgr, r, 4, fp_dot, gDebug, gVerbose);
-  }
+test_BDD() {
+	bddMgr mgr (0, 0);
+	BDD a = mgr.bddVar();
+	BDD b = mgr.bddVar();
+	BDD ap = mgr.bddVar();
+	BDD bp = mgr.bddVar();
+	
+	BDD r = (~a & ~b & ap & bp) | (a & b & ~ap & ~bp) | (a & b & ap & ~bp) |
+		(a & ~b & ap & ~bp);
+	
+	BDD l = (~ap & ~bp) | (ap & ~bp);
+	
+	std::vector<BDD> nodes;
+	nodes.push_back(r);
+	nodes.push_back(l);
+	
+	const char *inames[] = {"a", "b", "ap", "bp"};
+	const char *onames[] = {"r", "l"};  
+	FILE* fp = fopen("test_BDD.dot", "w");
+	DumpDot(mgr, nodes, inames, onames, fp);
+	fclose(fp);
+	makePDF("test_BDD");
 }
 
 
 int 
 main(int argc, char* argv[]) {
-  FILE *fp_dot = NULL;
-  gVerbose = 1;
-  gDebug = 1;
-  if (argc > 1) {
-	  if (gVerbose) {
-		  printf("Enabling dump dot\n");
-	  }
-	  fp_dot = fopen(argv[1], "w");
-	  if (!fp_dot) {
-		  printf("ERROR: failed to open %s for writing\n", argv[1]);
-	  }
-  }
-
-  test_BDD(fp_dot);
-
-  if (fp_dot) {
-	  fclose(fp_dot);
-  }
-
-  return 0;
+	test_BDD();	
+	return 0;
 }
