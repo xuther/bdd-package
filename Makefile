@@ -31,7 +31,7 @@ CUDD	= /Users/egm/Documents/cudd-3.0.0
  CUDDLIB	= -L$(CUDD)/lib
 CUDDLIBS	= -lobj -lcudd
     OBJS	=  DumpDot.o main.o 
- DEFINES	= -D USE_CUDD -std=c++11
+ DEFINES	=  -DUSE_CUDD -std=c++11
 
 # These are definitions to use your own BDD package.  You should not need
 # to change any of these unless I left off an object file.
@@ -51,7 +51,7 @@ endif
 # nonUnix based).
 
 CC 		= clang++
-CFLAGS 		= -g -Wall $(DEFINES)
+CFLAGS 	= -g -Wall -std=c++11 $(DEFINES)
 
 # Simple name a different target to change default 'make' behavior
 # when no target is specified.

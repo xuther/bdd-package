@@ -3,6 +3,7 @@
 #include <map>
 #include <set>
 #include <list>
+#include <vector>
 
 #ifdef USE_CUDD
 #include "cuddObj.hh"
@@ -93,7 +94,7 @@ void dumpEdge(unsigned x, unsigned y, bool high, FILE* fp) {
 
 // Finds the first variable on which f depends. 
 unsigned findVar(bddMgr& mgr, BDD f, unsigned var) {
-	assert( f != mgr.bddOne() && f != mgr.bddZero());
+	assert( !(f == mgr.bddOne()) && !(f == mgr.bddZero()));
 	BDD x = mgr.bddVar(var);
 	while (f.Restrict(x) == f) {
 		x = mgr.bddVar(++var);
