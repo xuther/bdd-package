@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include <vector>
 #include <string>
+#include <sys/wait.h>
 
 #include "bddObj.h"
 
@@ -31,27 +32,56 @@ void makePDF(std::string name) {
 
 void 
 test_BDD() {
-	bddMgr mgr (0, 0);
-	BDD a = mgr.bddVar();
+    bddMgr mgr (0);
+    mgr.bddVar();
+    mgr.bddVar();
+    mgr.bddVar();
+    mgr.bddVar();
+    BDD a = mgr.bddVar(0);
+    BDD b = mgr.bddVar(1);
+    BDD c = mgr.bddVar(2);
+    BDD d = mgr.bddVar(3);
+    
+    BDD q = (a & b);
+    mgr.PrintTable();
+    
+    std::cout << std::endl << std::endl << std::endl;
+
+    BDD r = (~a & c);
+    mgr.PrintTable();
+
+    std::cout << std::endl << std::endl << std::endl;
+
+    BDD s = (b & (~c & d));
+    mgr.PrintTable();
+    std::cout << std::endl << std::endl << std::endl;
+
+    BDD t = r | s;
+    mgr.PrintTable();
+    std::cout << std::endl << std::endl << std::endl;
+
+    BDD u = q | t;
+    mgr.PrintTable();
+    std::cout << std::endl << std::endl << std::endl;
+    
+/*	bddMgr mgr (0, 0);
+	BDD d = mgr.bddVar();
+	BDD c = mgr.bddVar();
 	BDD b = mgr.bddVar();
-	BDD ap = mgr.bddVar();
-	BDD bp = mgr.bddVar();
+	BDD a = mgr.bddVar();
 	
-	BDD r = (~a & ~b & ap & bp) | (a & b & ~ap & ~bp) | (a & b & ap & ~bp) |
-		(a & ~b & ap & ~bp);
-	
-	BDD l = (~ap & ~bp) | (ap & ~bp);
-	
+	BDD r = (a & b) | (~a & c) | (b & ~c & d);
+
 	std::vector<BDD> nodes;
-	nodes.push_back(r);
-	nodes.push_back(l);
+    nodes.push_back(r);
 	
-	const char *inames[] = {"a", "b", "ap", "bp"};
-	const char *onames[] = {"r", "l"};  
+	const char *inames[] = {"d", "c", "b", "a"};
+	const char *onames[] = { "s"};  
 	FILE* fp = fopen("test_BDD.dot", "w");
 	DumpDot(mgr, nodes, inames, onames, fp);
 	fclose(fp);
 	makePDF("test_BDD");
+    */
 }
 
 

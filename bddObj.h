@@ -15,6 +15,10 @@ typedef Cudd bddMgr;
 
 #else
 
+#include <vector>
+#include <string>
+#include <iostream>
+
 /* g_debug is used to toggle on and off any debug output you embed in your
  * code.  If it is nonzero, then output the debug information.  Otherwise
  * do not output anything.
@@ -55,6 +59,7 @@ static const int BDDMGR_CACHE_SLOTS = 2000;
  */
 
 class bddMgr;
+class TableEntry;
 
 class BDD {
   
@@ -63,10 +68,11 @@ class BDD {
 protected:
   
   bddMgr* ptrMgr;
+  TableEntry* entryPtr;
   
 public:
 
-  BDD();
+  BDD(bddMgr *mgr, TableEntry* entry);
 
   BDD(const BDD &from);
 
@@ -93,6 +99,46 @@ public:
   BDD 
   Restrict(const BDD& c) const;
 
+  BDD 
+  GetLow() const;
+
+  BDD
+  GetHigh() const;
+
+  void 
+  PrintIDRow() const;
+
+  unsigned int
+  GetID() const;
+
+  unsigned int 
+  GetVar() const; 
+
+  TableEntry*
+  getEntryAddr() const;
+
+  bddMgr* 
+  getMgrAddr() const;
+
+};
+
+class TableEntry {
+    friend class bddMgr;
+
+public:
+    unsigned int _variable;
+    int _low;
+    int _high;
+    unsigned int _id;
+
+    TableEntry(unsigned int variable, int low, int high, unsigned int id);
+    ~TableEntry();
+
+    unsigned int getvar();
+    int getLow();
+    int getHigh();
+    unsigned int getID();
+    void printRow();
 };
 
 
@@ -109,7 +155,8 @@ class bddMgr {
   friend class BDD;
 
 protected:
-
+  std::vector<TableEntry*> entries;
+  std::vector<TableEntry*> variables;
   int verbose;
   int debug;
 
@@ -161,10 +208,29 @@ public:
 
   BDD 
   bddZero();
+
+/*
+ * Gets or creates a BDD with the variable, High, and Low BDD's
+ */
+  BDD 
+  getOrCreate(unsigned int var, int high, int low);
+
+  int 
+  getTopVar(const BDD& f, const BDD& g, const BDD& h);
+
+  BDD 
+  basicCofactor(int var, const BDD& x, unsigned int pos);
+  
+  void
+  PrintTable();
+
+  void 
+  PrintVars();
 };
 
 /************************************************************************
  * END OF CLASSES YOU NEED TO IMPLELMENT
  ***********************************************************************/
+
 #endif
 #endif
