@@ -28,6 +28,8 @@ BDD::getMgrAddr() const {
 }
 
 BDD::BDD(const BDD &from) {
+    ptrMgr = from.getMgrAddr();
+    entryPtr = from.getEntryAddr();
 }
  
 BDD::~BDD() {
@@ -45,9 +47,10 @@ BDD::operator==(const BDD& other) const {
 
 BDD& 
 BDD::operator=(const BDD& right) {
-    BDD* ptr = new BDD(right.getMgrAddr(), right.getEntryAddr());
-    BDD& toReturn = *ptr;
-    return toReturn;
+    ptrMgr = right.getMgrAddr();
+    entryPtr = right.getEntryAddr();
+
+    return *this;
 }
 
 unsigned int 
@@ -72,7 +75,18 @@ BDD::operator|(const BDD& other) {
 
 BDD 
 BDD::Restrict(const BDD& c) const{
-  return *this;
+    int high = c.GetHigh().GetID();
+    int low = c.GetLow().GetID();
+
+    std::cout << "High; " << high << " Low: " << low << std::endl;
+
+    //check to make sure it's either an identity or a ~identity
+    if ((high != 0 && high != 1) || (low != 0 && low != 1)) {
+        std::cout << "Invalid restriction bdd" << std::endl;
+        return *this;
+    }
+    std::cout << " Beginning cofactor for restrict..." << std::endl; 
+    return ptrMgr -> basicCofactor(c.GetVar(), *this, high);
 }
 
 BDD
@@ -87,8 +101,8 @@ BDD::GetLow() const {
       return ptrMgr -> bddOne();
   }
 
-  BDD toReturn = ptrMgr -> bddVar(val-2);
-  return toReturn;
+  std::cout << val << std::endl;
+  return ptrMgr -> getRow(val-2);
 }
 
 BDD
@@ -106,8 +120,7 @@ BDD::GetHigh() const {
   }
 
   std::cout << val << std::endl;
-  BDD toReturn = ptrMgr -> bddVar(val-2);
-  return toReturn;
+  return ptrMgr -> getRow(val-2);
 }
 
 unsigned int 
@@ -190,25 +203,25 @@ bddMgr::basicCofactor(int var, const BDD& x, unsigned int pos) {
     if (bddZero() == x || bddOne() == x)  {
         std::cout << "Cofactor called on true/false BDD" << std::endl;
         x.PrintIDRow();
-        return BDD(x.getMgrAddr(), x.getEntryAddr());
+        return x;
     }
 
     if (x.GetVar() != var) {
         std::cout << "Variable not contained" << std::endl;
         x.PrintIDRow();
-        return BDD(x.getMgrAddr(), x.getEntryAddr());
+        return x; 
     }
     if (pos ==1) {
         std::cout << "Variable conainted. High Cofactor specified. " << std::endl;
         BDD val = x.GetHigh();
         val.PrintIDRow();
-        return BDD(val.getMgrAddr(), val.getEntryAddr());
+        return val;
     }
     else  {
         std::cout << "Variable contained. Low cofactor specified." << std::endl;
         BDD val = x.GetLow();
         val.PrintIDRow();
-        return BDD(val.getMgrAddr(), val.getEntryAddr());
+        return val; 
     }
 }
 
@@ -246,22 +259,21 @@ bddMgr::bddVar() {
   entries.push_back(toAdd);
   variables.push_back(toAdd);
   
-  std::cout << "-------DEBUG---------" << std::endl;
-  toAdd -> printRow();
-  variables[variables.size()-1] -> printRow();
-  for (int i = 0; i < variables.size(); i++) {
-        std::cout << variables[i] << std::endl;
-  }
-  std::cout << "-------END DEBUG-----" <<std::endl;
-  
   return BDD(this, toAdd);
 }
 
 BDD 
 bddMgr::bddVar(int index) {
-    std::cout << "Getting BDD at index: " << index << std::endl;
+    std::cout << "Getting Identity BDD at index: " << index +2 << std::endl;
     variables[index + 2] -> printRow();
-    return BDD(this, variables[index + 2 ]);
+    return BDD(this, variables[index + 2]);
+}
+
+BDD 
+bddMgr::getRow(int index) {
+    std::cout << "Getting BDD at index: " << index +2 << std::endl;
+    entries[index + 2] -> printRow();
+    return BDD(this, entries[index + 2]);
 }
 
 BDD 

@@ -209,6 +209,9 @@ public:
   BDD 
   bddZero();
 
+  BDD
+  getRow(int index);
+
 /*
  * Gets or creates a BDD with the variable, High, and Low BDD's
  */
