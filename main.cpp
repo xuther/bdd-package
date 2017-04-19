@@ -46,31 +46,49 @@ test_BDD() {
     
     BDD q = (a & b);
     assert(q.GetID() == 6);
-    mgr.PrintTable();
-    
-    std::cout << std::endl << std::endl << std::endl;
+    if (DEBUG == true)     
+        mgr.PrintTable();
+    if (DEBUG == true)     
+        std::cout << std::endl << std::endl << std::endl;
 
     BDD r = (~a & c);
     assert(r.GetID() == 8);
-    mgr.PrintTable();
+    if (DEBUG == true)     
+        mgr.PrintTable();
 
-    std::cout << std::endl << std::endl << std::endl;
+    if (DEBUG == true)     
+        std::cout << std::endl << std::endl << std::endl;
 
     BDD s = (b & (~c & d));
-    mgr.PrintTable();
+    if (DEBUG == true)     
+        mgr.PrintTable();
     assert(s.GetID() == 11);
-    std::cout << std::endl << std::endl << std::endl;
+    if (DEBUG == true)     
+        std::cout << std::endl << std::endl << std::endl;
 
     BDD t = r | s;
-    mgr.PrintTable();
+    if (DEBUG == true)     
+        mgr.PrintTable();
     assert(t.GetID() == 14);
-    std::cout << std::endl << std::endl << std::endl;
+    if (DEBUG == true)     
+        std::cout << std::endl << std::endl << std::endl;
 
     BDD u = q | t;
-    mgr.PrintTable();
+    if (DEBUG == true)     
+        mgr.PrintTable();
     assert(u.GetID() == 15);
-    std::cout << std::endl << std::endl << std::endl;
+    if (DEBUG == true)     
+        std::cout << std::endl << std::endl << std::endl;
     
+}
+
+bool 
+test_in_set(std::vector<unsigned char> values, unsigned int toCheck) {
+    for (int i = 0; i < values.size(); i++) {
+            if (toCheck == values[i])
+                return true;
+        }
+    return false;
 }
 
 
@@ -97,7 +115,8 @@ test_BDD_set() {
 
    for(int i =0; i < values.size(); i++) {
        std::bitset<8> x(values[i]);
-       std::cout << x << std::endl;
+        if (DEBUG == true)     
+           std::cout << x << std::endl;
        bitValues.push_back(x);
    }
 
@@ -124,43 +143,105 @@ test_BDD_set() {
    BDD seven = (a & (~b) & (~c) & (~d) & e & f & (~g) & (~h));
    BDD eight = ((~a) & b & c & (~d) & e & (~f) & g & (~h));
 
-   mgr.PrintTable();
+    if (DEBUG == true)
+        mgr.PrintTable();
 
    BDD set = one | two | three | four | five | six | seven | eight;
-   mgr.PrintTable();
+   if (DEBUG == true)
+       mgr.PrintTable();
 
 
    for (int i = 0 ; i < values.size(); i++) {
+       std::cout << "Testing " << int(values[i]) << " should be in set.... ";
        BDD cur = set;
-       std::cout << bitValues[i] << std::endl;
+        if (DEBUG == true)     
+           std::cout << bitValues[i] << std::endl;
        for (int j = 0; j < bdds.size(); j++) {
            if (bitValues[i].test(7 - j)) {
-               std::cout << "Restricting on " << j << std::endl;
-               bdds[j].PrintIDRow();
-               std::cout << "Pre restrict " << std::endl;
-               cur.PrintIDRow();
+               if (DEBUG == true)
+                   std::cout << "Restricting on " << j << std::endl;
+               if (DEBUG == true)
+                   bdds[j].PrintIDRow();
+               if (DEBUG == true)
+                   std::cout << "Pre restrict " << std::endl;
+               if (DEBUG == true)
+                   cur.PrintIDRow();
                BDD next = cur.Restrict(bdds[j]);
-               std::cout << "Post restrict " << std::endl;
-               next.PrintIDRow();
+               if (DEBUG == true)
+                   std::cout << "Post restrict " << std::endl;
+               if (DEBUG == true)     
+                   next.PrintIDRow();
                cur = next;
            }
            else {
-               std::cout << "Restricting on ~" << j << std::endl;
-               std::cout << "Pre restrict " << std::endl;
+               if (DEBUG == true)
+                   std::cout << "Restricting on ~" << j << std::endl;
+               if (DEBUG == true)
+                   std::cout << "Pre restrict " << std::endl;
                cur = cur.Restrict(~bdds[j]);
-               std::cout << "Post restrict " << std::endl;
-               cur.PrintIDRow();
+               if (DEBUG == true)
+                   std::cout << "Post restrict " << std::endl;
+               if (DEBUG == true)     
+                   cur.PrintIDRow();
                
            }
        }
-       cur.PrintIDRow();
+        if (DEBUG == true)     
+           cur.PrintIDRow();
        assert(cur.GetID() == 1);
+       std::cout << "True" << std::endl;
+   }
+
+   for (unsigned int i = 0; i <  256; i++) {
+       //Test to make sure it's not in the set
+       if (test_in_set(values, i) == true) {
+            continue;
+       }
+       std::cout << "Testing " << i << " should not be in set...... ";
+       
+       BDD cur = set;
+       std::bitset<8> tempBitset(i);
+
+       for (int j = 0; j < bdds.size(); j++) {
+           if (tempBitset.test(7 - j)) {
+               if (DEBUG == true)
+                   std::cout << "Restricting on " << j << std::endl;
+               if (DEBUG == true)
+                   bdds[j].PrintIDRow();
+               if (DEBUG == true)
+                   std::cout << "Pre restrict " << std::endl;
+               if (DEBUG == true)
+                   cur.PrintIDRow();
+               BDD next = cur.Restrict(bdds[j]);
+               if (DEBUG == true)
+                   std::cout << "Post restrict " << std::endl;
+               if (DEBUG == true)
+                   next.PrintIDRow();
+               cur = next;
+           }
+           else {
+               if (DEBUG == true)
+                   std::cout << "Restricting on ~" << j << std::endl;
+               if (DEBUG == true)
+                   std::cout << "Pre restrict " << std::endl;
+               cur = cur.Restrict(~bdds[j]);
+               if (DEBUG == true)
+                   std::cout << "Post restrict " << std::endl;
+               if (DEBUG == true)
+                   cur.PrintIDRow();
+               
+           }
+       }
+        if (DEBUG == true)     
+           cur.PrintIDRow();
+       assert(cur.GetID() == 0);
+       std::cout << "True" << std::endl;
    }
 }
 
 int 
 main(int argc, char* argv[]) {
-//	test_BDD();	
+	test_BDD();	
     test_BDD_set();
 	return 0;
 }

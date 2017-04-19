@@ -78,20 +78,23 @@ BDD::Restrict(const BDD& c) const{
     int high = c.GetHigh().GetID();
     int low = c.GetLow().GetID();
 
-    std::cout << "High; " << high << " Low: " << low << std::endl;
+    if (DEBUG == true)
+        std::cout << "High; " << high << " Low: " << low << std::endl;
 
     //check to make sure it's either an identity or a ~identity
     if ((high != 0 && high != 1) || (low != 0 && low != 1)) {
         std::cout << "Invalid restriction bdd" << std::endl;
         return *this;
     }
-    std::cout << " Beginning cofactor for restrict..." << std::endl; 
+    if (DEBUG == true)
+        std::cout << " Beginning cofactor for restrict..." << std::endl; 
     return ptrMgr -> basicCofactor(c.GetVar(), *this, high);
 }
 
 BDD
 BDD::GetLow() const {
-  std::cout << "getting low" << std::endl;
+    if (DEBUG == true)
+      std::cout << "getting low" << std::endl;
   int val = entryPtr -> getLow();
 
   if(val == 0) {
@@ -101,25 +104,30 @@ BDD::GetLow() const {
       return ptrMgr -> bddOne();
   }
 
-  std::cout << val << std::endl;
+    if (DEBUG == true)
+        std::cout << val << std::endl;
   return ptrMgr -> getRow(val-2);
 }
 
 BDD
 BDD::GetHigh() const {
-  std::cout << "getting high" << std::endl;
+    if (DEBUG == true)
+      std::cout << "getting high" << std::endl;
   int val = entryPtr -> getHigh();
 
   if(val == 0) {
-      std::cout << val << std::endl;
+       if (DEBUG == true)
+          std::cout << val << std::endl;
       return ptrMgr -> bddZero();
   }
   if(val == 1) {
-      std::cout << val << std::endl;
+       if (DEBUG == true)
+          std::cout << val << std::endl;
       return ptrMgr -> bddOne();
   }
 
-  std::cout << val << std::endl;
+    if (DEBUG == true)
+        std::cout << val << std::endl;
   return ptrMgr -> getRow(val-2);
 }
 
@@ -130,41 +138,50 @@ BDD::GetVar() const {
 
 BDD
 BDD::Ite(const BDD& g, const BDD& h, unsigned int limit) const {
-    std::cout << "starting ITE on: " << GetID() << ", " << g.GetID() << ", " << h.GetID() << std::endl;
+    if (DEBUG == true)
+        std::cout << "starting ITE on: " << GetID() << ", " << g.GetID() << ", " << h.GetID() << std::endl;
     //Recursive Call
     //Base Case
     if (*this == ptrMgr -> bddOne()){
-        std::cout << "Found one" << std::endl;
+        if (DEBUG == true)
+            std::cout << "Found one" << std::endl;
         return BDD(g.getMgrAddr(), g.getEntryAddr());
     }
     if (*this == ptrMgr -> bddZero()){
-        std::cout << "Found zero" << std::endl;
+        if (DEBUG == true)
+            std::cout << "Found zero" << std::endl;
         return BDD(h.getMgrAddr(), h.getEntryAddr());
     }
     if (g == h) {
-        std::cout << "Homogeonous options" << std::endl;
+        if (DEBUG == true)
+            std::cout << "Homogeonous options" << std::endl;
         return BDD(g.getMgrAddr(), g.getEntryAddr());
     }  
 
     int v = ptrMgr -> getTopVar(*this, g, h);
-    std::cout << "Variable for factoring " << v << std::endl;
-    std::cout << "f: " << std::endl;
-    PrintIDRow();
-    std::cout << "g: " << std::endl;
-    g.PrintIDRow();
-    std::cout << "h: " << std::endl;
-    h.PrintIDRow();
-
+    if (DEBUG == true) {
+        std::cout << "Variable for factoring " << v << std::endl;
+        std::cout << "f: " << std::endl;
+        PrintIDRow();
+        std::cout << "g: " << std::endl;
+        g.PrintIDRow();
+        std::cout << "h: " << std::endl;
+        h.PrintIDRow();
+    }
 
     //recursive calls to get the left and right side
     BDD t = ptrMgr -> basicCofactor(v,*this,0).Ite(ptrMgr -> basicCofactor(v,g,0),ptrMgr -> basicCofactor(v,h,0));
-    std::cout << "Found t:" <<std::endl;
-    t.PrintIDRow();
+    if (DEBUG == true)
+        std::cout << "Found t:" <<std::endl;
+    if (DEBUG == true)
+        t.PrintIDRow();
 
     //recurseive calls tog et the left and right side
     BDD e = ptrMgr -> basicCofactor(v,*this,1).Ite(ptrMgr -> basicCofactor(v,g,1),ptrMgr -> basicCofactor(v,h,1));
-    std::cout << "Found e:" <<std::endl;
-    e.PrintIDRow();
+    if (DEBUG == true)
+        std::cout << "Found e:" <<std::endl;
+    if (DEBUG == true)
+        e.PrintIDRow();
 
     if (t == e) {
         return e;
@@ -196,32 +213,40 @@ bddMgr::getOrCreate(unsigned int var, int low, int high) {
 
 BDD
 bddMgr::basicCofactor(int var, const BDD& x, unsigned int pos) {
+    if (DEBUG == true) {
         std::cout << "starting cofactor..." << std::endl;
         std::cout << "Cofactor: ";
         x.PrintIDRow();
+        }
 
     if (bddZero() == x || bddOne() == x)  {
+    if (DEBUG == true) {
         std::cout << "Cofactor called on true/false BDD" << std::endl;
-        x.PrintIDRow();
+        x.PrintIDRow(); }
         return x;
     }
 
     if (x.GetVar() != var) {
+    if (DEBUG == true) {
         std::cout << "Variable not contained" << std::endl;
-        x.PrintIDRow();
+        x.PrintIDRow(); }
         return x; 
     }
     if (pos ==1) {
-        std::cout << "Variable conainted. High Cofactor specified. " << std::endl;
+        if (DEBUG == true)
+            std::cout << "Variable conainted. High Cofactor specified. " << std::endl;
         BDD val = x.GetHigh();
-        val.PrintIDRow();
+        if (DEBUG == true)
+            val.PrintIDRow();
         return val;
     }
     else  {
-        std::cout << "Variable contained. Low cofactor specified." << std::endl;
-        BDD val = x.GetLow();
-        val.PrintIDRow();
-        return val; 
+        if (DEBUG == true)
+            std::cout << "Variable contained. Low cofactor specified." << std::endl;
+            BDD val = x.GetLow();
+        if (DEBUG == true)
+            val.PrintIDRow();
+            return val; 
     }
 }
 
@@ -264,15 +289,19 @@ bddMgr::bddVar() {
 
 BDD 
 bddMgr::bddVar(int index) {
-    std::cout << "Getting Identity BDD at index: " << index +2 << std::endl;
-    variables[index + 2] -> printRow();
+    if (DEBUG == true)
+        std::cout << "Getting Identity BDD at index: " << index +2 << std::endl;
+    if (DEBUG == true)
+        variables[index + 2] -> printRow();
     return BDD(this, variables[index + 2]);
 }
 
 BDD 
 bddMgr::getRow(int index) {
-    std::cout << "Getting BDD at index: " << index +2 << std::endl;
-    entries[index + 2] -> printRow();
+    if (DEBUG == true) 
+        std::cout << "Getting BDD at index: " << index +2 << std::endl;
+    if (DEBUG == true) 
+        entries[index + 2] -> printRow();
     return BDD(this, entries[index + 2]);
 }
 
@@ -305,7 +334,8 @@ int bddMgr::getTopVar(const BDD& f, const BDD& g, const BDD& h) {
     unsigned int gID = g.GetVar();
     unsigned int hID = h.GetVar();
 
-   std::cout << "Getting top var out of " << fID << " , " << gID << " , " << hID << " , " << std::endl;
+    if (DEBUG == true) 
+       std::cout << "Getting top var out of " << fID << " , " << gID << " , " << hID << " , " << std::endl;
 
    unsigned int minValue = 0;
    if (fID != 0 == fID != 1) {
@@ -320,7 +350,8 @@ int bddMgr::getTopVar(const BDD& f, const BDD& g, const BDD& h) {
            minValue = hID;
    }
 
-   std::cout << "Top var was " << minValue << std::endl;
+    if (DEBUG == true) 
+       std::cout << "Top var was " << minValue << std::endl;
 
    return minValue;
 }

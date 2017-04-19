@@ -38,6 +38,7 @@ extern int g_verbose;
 
 static const int BDDMGR_UNIQUE_SLOTS = 1000;
 static const int BDDMGR_CACHE_SLOTS = 2000;
+static const bool DEBUG = false;
 
 /************************************************************************
  * CLASSES YOU NEED TO IMPLEMENT
